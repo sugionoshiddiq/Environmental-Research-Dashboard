@@ -129,37 +129,54 @@ with st.expander("Hierarchical Cluster Table & Cluster Document Count", expanded
         # Urutkan untuk tampilan tree
         summary = summary.sort_values(by=["Cluster Labels", "Document Count"], ascending=[True, False])
 
-        # Tambahkan kolom Cluster untuk ditampilkan sebagai kolom biasa
+        # Tambahkan kolom Cluster untuk tampilan biasa
         summary["Cluster Display"] = summary["Cluster Labels"]
 
         # Reorder columns: Cluster → Topic → Document Count
         summary = summary[["Cluster Display", "Topic Labels", "Document Count", "Cluster Labels"]]
 
-        # Setup AG Grid
+        # ==============================================
+        # 🧱 Konfigurasi AG Grid
+        # ==============================================
         gb = GridOptionsBuilder.from_dataframe(summary)
         gb.configure_default_column(groupable=True, enableValue=True, enableRowGroup=True)
 
         # Gunakan Cluster Labels untuk rowGroup (tetap disembunyikan)
         gb.configure_column("Cluster Labels", rowGroup=True, hide=True)
 
-        # Tampilkan kolom lain
+        # Tampilkan kolom lain dengan header yang lebih rapi
         gb.configure_column("Cluster Display", headerName="Cluster")
         gb.configure_column("Topic Labels", headerName="Topic")
         gb.configure_column("Document Count", type=["numericColumn"], headerName="Documents")
 
-        # Konfigurasi tree dan layout
+        # ==============================================
+        # ⚙️ Konfigurasi Tree dan Layout tanpa kolom "Group"
+        # ==============================================
         gb.configure_grid_options(
             treeData=True,
             animateRows=True,
-            groupDefaultExpanded=-1,
-            domLayout='normal'
+            groupDefaultExpanded=-1,  # Expand semua node (ubah jadi 0 kalau mau collapse default)
+            domLayout='normal',
+            autoGroupColumnDef={
+                "headerName": "",            # Hilangkan header "Group"
+                "minWidth": 40,              # Kolom kecil hanya untuk ikon expand/collapse
+                "cellRendererParams": {
+                    "suppressCount": True,   # Hilangkan jumlah anak node
+                    "checkbox": False        # Hilangkan checkbox
+                }
+            }
         )
+
+        # Pagination dan sidebar
         gb.configure_pagination(paginationAutoPageSize=True)
         gb.configure_side_bar()
         gb.configure_selection("single")
 
         grid_options = gb.build()
 
+        # ==============================================
+        # 🪶 Render AG Grid
+        # ==============================================
         AgGrid(
             summary,
             gridOptions=grid_options,
@@ -169,31 +186,9 @@ with st.expander("Hierarchical Cluster Table & Cluster Document Count", expanded
             fit_columns_on_grid_load=True,
         )
 
-        # ------------------------------
-        # Bar chart horizontal: jumlah dokumen per cluster
-        # ------------------------------
-        cluster_counts = (
-            filtered_tree.groupby("Cluster Labels")
-            .agg({"Title": "count"})
-            .reset_index()
-            .rename(columns={"Title": "Document Count"})
-            .sort_values(by="Document Count", ascending=True)
-        )
-
-        fig_cluster_bar = px.bar(
-            cluster_counts,
-            y="Cluster Labels",
-            x="Document Count",
-            orientation='h',
-            text="Document Count",
-            title="Documents per Cluster",
-            labels={"Cluster Labels": "Cluster", "Document Count": "Documents"}
-        )
-        fig_cluster_bar.update_traces(textposition="outside")
-        st.plotly_chart(fig_cluster_bar, use_container_width=True)
-
     else:
-        st.info("Kolom 'Cluster Labels', 'Topic Labels', atau 'Title' tidak ditemukan dalam data.")
+        st.warning("The required columns were not found in the DataFrame (Cluster Labels, Topic Labels, Title).")
+
 
 # ------------------------------
 # Line chart: frequency per year
@@ -379,4 +374,5 @@ if interp_col in filtered.columns and label_col in filtered.columns:
     else:
         st.sidebar.info("No interpretations available for the selected filter")
 else:
+
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
