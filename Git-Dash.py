@@ -33,26 +33,16 @@ df["Year"] = pd.to_numeric(df["Year"], errors="coerce")
 # ------------------------------
 st.sidebar.header("Filters")
 
-# Year range filter
-year_min, year_max = int(df["Year"].min()), int(df["Year"].max())
-selected_years = st.sidebar.slider(
-    "Select Year Range:",
-    min_value=2022,
-    max_value=2025,
-    value=(2022, 2025),
-    step=1
-)
-
-# Cluster / Topic mode
+# 1️⃣ Cluster / Topic
 analysis_mode = st.sidebar.radio("Analyze by:", ("Cluster", "Topic"))
-include_outlier = st.sidebar.selectbox("Include Outliers?", ["Yes", "No"], index=1)  # default No
 
-# ------------------------------
-# Apply filters
-# ------------------------------
+# 2️⃣ Include Outliers
+include_outlier = st.sidebar.selectbox("Include Outliers?", ["Yes", "No"], index=1)
+
+# Copy df untuk filter awal
 filtered = df.copy()
 
-# Outlier filter
+# Terapkan Outlier filter
 if include_outlier == "No" and "Assigned_Topic" in filtered.columns:
     filtered = filtered[filtered["Assigned_Topic"] != -1]
 
@@ -68,18 +58,24 @@ else:
     choices = ["All"] + available
     selected = st.sidebar.multiselect("Select Topic Label:", choices, default=["All"])
 
-# Terapkan filter Cluster / Topic
 if "All" not in selected and selected:
     filtered = filtered[filtered[col_name].isin(selected)]
 
-# Terapkan filter Tahun
-filtered = filtered[(filtered["Year"] >= selected_years[0]) & (filtered["Year"] <= selected_years[1])]
-
-# Informasi filter yang aktif
-selected_text = f"{'Selected Cluster:' if analysis_mode == 'Cluster' else 'Selected Topic:'} "
-selected_text += ", ".join(selected) if "All" not in selected else f"Showing all {'clusters' if analysis_mode == 'Cluster' else 'topics'}"
-st.markdown(f"**{selected_text}**")
-st.sidebar.markdown(f"**Total Documents (after filters): {len(filtered)}**")
+# 3️⃣ Year range slider (setelah cluster/topic filter)
+if "Year" in filtered.columns and not filtered["Year"].isna().all():
+    year_min = int(filtered["Year"].min())
+    year_max = int(filtered["Year"].max())
+    selected_years = st.sidebar.slider(
+        "Select Year Range:",
+        min_value=year_min,
+        max_value=year_max,
+        value=(year_min, year_max),
+        step=1
+    )
+    # Terapkan filter tahun
+    filtered = filtered[(filtered["Year"] >= selected_years[0]) & (filtered["Year"] <= selected_years[1])]
+else:
+    st.sidebar.info("Year column not found or empty")
 
 # ------------------------------
 # Sidebar Hyperparameter Information
@@ -325,3 +321,4 @@ if interp_col in filtered.columns and label_col in filtered.columns:
         st.sidebar.info("No interpretations available for the selected filter")
 else:
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
+
