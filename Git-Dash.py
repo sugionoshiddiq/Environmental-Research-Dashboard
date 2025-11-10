@@ -90,13 +90,13 @@ with st.sidebar.expander("Topic Modeling Hyperparameter", expanded=False):
     `topic_model.topics_over_time`
 
     **Coherence score:**  
-    `0.6395 (± 0.0092)`
+    `0.6395`
 
     **Diversity score:**  
-    `0.9197 (± 0.0038)`
+    `0.9197`
 
     **Outlier Ratio:**  
-    `28.11% (± 0.0092)`
+    `28.11%`
 
     **Data cut-off date:**  
     `22-11-2025`
@@ -386,4 +386,5 @@ if interp_col in filtered.columns and label_col in filtered.columns:
 else:
 
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
+
 
