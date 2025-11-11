@@ -34,7 +34,7 @@ df["Year"] = pd.to_numeric(df["Year"], errors="coerce")
 st.sidebar.header("Filters")
 
 # 1️⃣ Cluster / Topic
-analysis_mode = st.sidebar.radio("Analyze by:", ("Cluster", "Topic"))
+analysis_mode = st.sidebar.radio("Level of analysis:", ("Cluster", "Topic"))
 
 # 2️⃣ Include Outliers
 include_outlier = st.sidebar.selectbox("Include Outliers?", ["Yes", "No"], index=1)
@@ -321,6 +321,7 @@ if interp_col in filtered.columns and label_col in filtered.columns:
         st.sidebar.info("No interpretations available for the selected filter")
 else:
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
+
 
 
 
