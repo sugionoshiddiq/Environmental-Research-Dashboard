@@ -216,7 +216,7 @@ fig_line.update_traces(
     hovertemplate="<br>".join([
         "Year: %{x}",
         "Frequency: %{y}",
-        "Keyword Over Time: %{customdata[2]}"
+        "Keywords Over Time: %{customdata[2]}"
     ]),
     hoverlabel=dict(font_size=24, font_family="Arial")
 )
@@ -321,5 +321,6 @@ if interp_col in filtered.columns and label_col in filtered.columns:
         st.sidebar.info("No interpretations available for the selected filter")
 else:
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
+
 
 
