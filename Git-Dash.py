@@ -13,7 +13,7 @@ st.set_page_config(layout="wide", page_title="Topic Modeling Dashboard")
 # ------------------------------
 # Dashboard Title
 # ------------------------------
-st.title("Topic Modeling Dashboard - Indonesia Environmental Research")
+st.title("BRIN – Environmental Research Dashboard")
 
 # ------------------------------
 # Load data
@@ -321,4 +321,5 @@ if interp_col in filtered.columns and label_col in filtered.columns:
         st.sidebar.info("No interpretations available for the selected filter")
 else:
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
+
 
