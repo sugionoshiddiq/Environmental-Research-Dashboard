@@ -265,44 +265,17 @@ else:
 
 # Affiliations
 if "Affiliations" in filtered.columns:
-    affs_exploded = (
-        filtered["Affiliations"]
-        .dropna()
-        .astype(str)
-        .str.split(";")
-        .explode()
-        .str.strip()
-    )
-    # Hilangkan BRIN dan string kosong
-    affs_exploded = affs_exploded[
-        ~affs_exploded.str.contains("Badan Riset dan Inovasi Nasional", na=False)
-    ]
+    affs_exploded = filtered["Affiliations"].dropna().astype(str).str.split(";").explode().str.strip()
+    affs_exploded = affs_exploded[~affs_exploded.str.contains("Badan Riset dan Inovasi Nasional", na=False)]
     affs_exploded = affs_exploded[affs_exploded != ""]
-
-    # Hitung top 10
     affs_counts = affs_exploded.value_counts().head(10).reset_index()
     affs_counts.columns = ["Affiliation", "Count"]
     affs_counts = affs_counts.sort_values(by="Count", ascending=True)
-
-    # Buat kolom hover baru
-    affs_counts["Collaborator"] = affs_counts["Affiliation"]
-
-    # Plot
-    fig_b = px.bar(
-        affs_counts,
-        y="Affiliation",
-        x="Count",
-        text="Count",
-        orientation="h",
-        title="Top 10 Collaborators",
-        hover_name="Collaborator",  # hover sekarang menampilkan "Collaborator"
-        hover_data={"Count": True}
-    )
+    fig_b = px.bar(affs_counts, y="Affiliation", x="Count", text="Count", orientation='h', title="Top 10 Collaborators")
     fig_b.update_traces(textposition="outside")
     col_b.plotly_chart(fig_b, use_container_width=True)
 else:
     col_b.info("No Affiliations data")
-
 
 # Journals
 if "Journal Name" in filtered.columns:
@@ -348,6 +321,7 @@ if interp_col in filtered.columns and label_col in filtered.columns:
         st.sidebar.info("No interpretations available for the selected filter")
 else:
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
+
 
 
 
