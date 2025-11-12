@@ -271,7 +271,7 @@ if "Affiliations" in filtered.columns:
     affs_counts = affs_exploded.value_counts().head(10).reset_index()
     affs_counts.columns = ["Affiliation", "Count"]
     affs_counts = affs_counts.sort_values(by="Count", ascending=True)
-    fig_b = px.bar(affs_counts, y="Affiliation", x="Count", text="Count", orientation='h', title="Top 10 Collaborators")
+    fig_b = px.bar(affs_counts, y="Collaborator", x="Count", text="Count", orientation='h', title="Top 10 Collaborators")
     fig_b.update_traces(textposition="outside")
     col_b.plotly_chart(fig_b, use_container_width=True)
 else:
@@ -284,7 +284,7 @@ if "Journal Name" in filtered.columns:
     journal_counts = journals.value_counts().head(10).reset_index()
     journal_counts.columns = ["Journal", "Count"]
     journal_counts = journal_counts.sort_values(by="Count", ascending=True)
-    fig_c = px.bar(journal_counts, y="Journal", x="Count", text="Count", orientation='h', title="Top 10 Journals/Conferences")
+    fig_c = px.bar(journal_counts, y="Journal/Conference", x="Count", text="Count", orientation='h', title="Top 10 Journals/Conferences")
     fig_c.update_traces(textposition="outside")
     col_c.plotly_chart(fig_c, use_container_width=True)
 else:
@@ -321,6 +321,7 @@ if interp_col in filtered.columns and label_col in filtered.columns:
         st.sidebar.info("No interpretations available for the selected filter")
 else:
     st.sidebar.info(f"Columns {label_col} or {interp_col} not found in data")
+
 
 
 
