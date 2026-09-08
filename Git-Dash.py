@@ -4,7 +4,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from wordcloud import WordCloud\
+from wordcloud import WordCloud
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
